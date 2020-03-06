@@ -3,14 +3,16 @@ from IPython.display import Image
 from IPython.core.display import HTML
 ```
 
+The code, weights and logs used for these experiments can be found at 'https://github.com/JakobKallestad/InceptionV3-on-plankton-images'.
+
 <br>
 
-<font size="17">__Exercise 1 report__</font>
+# Exercise 1 report
 <br>
 
-<font size="5">By Jacob Kallestad, Eirik Norseng and Eirik Rikstad</font>
+#### By Jakob Kallestad, Eirik Norseng and Eirik Rikstad
 
-# Outline:
+## Outline:
 <font size="5">
 <ol>
 <br>
@@ -104,14 +106,14 @@ Image(url = "https://miro.medium.com/max/3012/1*ooVUXW6BIcoRdsF7kzkMwQ.png")
 
 As we can see, the Inception V3 architecture also involves reduction modules, which in principle are the same as inception module, except that it is designed to decrease the dimensions of the input. In total the Inception V3 includes about 24M parameters. It is also worth mentioning that the V3 takes as default input 299x299x3, and uses a RSMProp optimizer. As this is designed for the ImageNet dataset, it outputs 1000 different classes, but as we use it for the plankton dataset, we change the last layers to fit to our desired output.
 
+--------------
 <br>
 
-<font size="17">__2. InceptionV3 algorithm on Cifar10__</font>
-<br>
+# 2. InceptionV3 algorithm on Cifar10
 
-# Outline:
+## Outline:
 <font size="5">
-<ol>
+<ul>
 <br>
 <li>The Cifar10 dataset</li>
 <br>
@@ -122,7 +124,7 @@ As we can see, the Inception V3 architecture also involves reduction modules, wh
 <li>Training results</li>
 <br>
 <li>Results on the testset</li>
-</ol>
+</ul>
 </font>
 
 # The Cifar 10 dataset:
@@ -146,7 +148,7 @@ link_list = ['https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-pl
 html_list = ["<table>"]
 html_list.append("<tr>")
 for j in range(10):
-    html_list.append("<td><center>{}</center><img src='{}'></td>".format(class_names[i*10+j], link_list[i*10+j]))
+    html_list.append("<td><center>{}</center><img src='{}'></td>".format(class_names[j], link_list[j]))
 html_list.append("</tr>")
 html_list.append("</table>")
 
@@ -159,7 +161,8 @@ display(HTML(''.join(html_list)))
 
 # Hyper parameters
 - __optimizer:__ 
-    - Adam
+    - We used the __Adam__ optimizer because it is very robust and it is forgiving if you specify a non-optimal learning rate.
+    - InceptionV3 uses RMSProp as default, but after using RMSProp initially we noticed that we were getting better results with Adam, so ended up using that instead.
 <br>
 <br>
 - __learning rate:__
@@ -168,7 +171,8 @@ display(HTML(''.join(html_list)))
 <br>
 <br>
 - __batch size:__
-    - 64
+    - We ended up using a batch size of 64
+    - That is large enough to ensure a good representation of the 10 classes is each batch, and still not being too computationally heavy.
 <br>
 <br>
 
@@ -184,15 +188,11 @@ display(HTML(''.join(html_list)))
     - width_shift_range=0.1
     - height_shift_range=0.1
     - horizontal_flip=True
-    - inception's own pre_proccess function
-
-InceptionV3 comes with a pre_process function that normalizes the pixels
-to values ranging from -1>x<1
-<br>
-<br>
-- __Datagenerator:__
+    - We used these flip and rotational augmentations to decrease the risk of overfitting, and to increase the amount of data that we can train on.
     - shuffle=True
-    - color_mode='rgb'
+    - Since the training data is organized in order of category, we shuffle the data before every epoch. The model trains on the entire dataset for every epoch.
+    - inception's own pre_proccess function. InceptionV3 comes with a pre_process function that normalizes the pixels
+to values ranging from -1>x<1
 <br>
 <br>
 
@@ -220,7 +220,7 @@ display(HTML("""<table>
 
 Red = validation data, Blue = training data
 
-Blabla something about learning rate, unfreezing layers at epoch 4 (actually epoch 5) and so on
+The spike of improvement at epoch 4 is because thats when we unfroze all the layers of the network. Not much improvement happened after about epoch 15 for the validation data.
 
 __Results after 28 epochs:__
 
@@ -252,54 +252,63 @@ Red = validation data, Blue = training data
 The loss function indicates that we might be overfitting the model slightly in the last 10 epochs. However, the loss increase is insignicant and so we stop training and keep the model for testing.
 
 
+# Results on the testset
+
+
 ```python
-#Confusion matrix for validation data for InceptionV3 on Cifar10 dataset:
-Image(url= "https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/cifar10/confusion_matrix_cifar10_validation.png")
+Image(url= "https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/cifar10/accuracy_cifar10_testdata.png")
 ```
 
 
 
 
-<img src="https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/cifar10/confusion_matrix_cifar10_validation.png"/>
+<img src="https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/cifar10/accuracy_cifar10_testdata.png"/>
 
 
 
-(You can double click the image to zoom)
+When evaluating the model on our testset we got an accuracy of 95.42%. Very much what the model predicted on the validation data, indicating that we did not overfit during training.
+(The results are evaluated with the code in 'running_cifar10_model_on_testset.ipynb.)
 
-From the confusion matrix we can see that most categories are categorized correctly more than 95% of the time, but there are two categories that the model struggles more with.
 
-The 'ship' category is correctly recognized only 83% of the time. Ships are misinterpreted as 'cat' in 11% of cases and 'deer' in 2% of cases.
+```python
+#Confusion matrix on test set
+Image(url= "https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/cifar10/confusion_matrix_cifar10_testdata.png")
+```
 
-Cats are recognized in 93% of cases. Cats are most often mistaken for ships (3%) and horses (2%).
 
-# Results on the testset
 
-Graphs of accuracy (skip the top 5 accuracy, consider removing the training top 5 accuracy as well)
-Confusion matrix (graph and matrix on the same table, this is becomming a very long report)
 
-Talk about possible improvements? Why is the model doing badly on ships? Ah well...
+<img src="https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/cifar10/confusion_matrix_cifar10_testdata.png"/>
 
-Remember that we havent talked about regularization methods, mention something somewhere about the batch normalizations and dropout layers in InceptionV3?
 
----------------------
+
+From the confusion matrix we see that categories that most often are mistaken during evaluation are cats and dogs. And they are most likely to be mistaken for eachother. This should come as no surprise as, among these 10 categories, those two are probably the most similar. Even humans can mistake a dog for a cat if the image is of very low resolution. The original images are of size (32, 32).
+
+### Possible improvements
+
+After about epoch 15, the model stopped improving on the validation data. To squeeze a better result out of this model we could try to lower the learning rate and increase the amount of augmentation used in the generator.
+
+However, our focus for this exercise was more geared towards the Plankton dataset which demanded most of our virtual machines running time, and so we settled for this result.
 
 ----------
 <br>
 
-<font size="17">__InceptionV3 algorithm on Plankton dataset__</font>
+# InceptionV3 algorithm on Plankton dataset
 
-# Outline:
+## Outline:
 <font size="5">
-<ol>
+<ul>
 <br>
 <li>Introduction to the plankton dataset</li>
+<br>
+<li>Hyperparameters</li>
 <br>
 <li>Data preprocessing and augmentation</li>
 <br>
 <li>Initial experiments</li>
 <br>
 <li>Results</li>
-</ol>
+</ul>
 </font>
 
 
@@ -355,7 +364,7 @@ display(HTML(''.join(html_list)))
 <table><tr><td><center>Acantharea</center><img src='https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/species/Acantharea.jpg'></td><td><center>Acartiidae</center><img src='https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/species/Acartiidae.jpg'></td><td><center>Actinopterygii</center><img src='https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/species/Actinopterygii.jpg'></td><td><center>Annelida</center><img src='https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/species/Annelida.jpg'></td><td><center>Bivalvia__Mollusca</center><img src='https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/species/Bivalvia__Mollusca.jpg'></td><td><center>Brachyura</center><img src='https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/species/Brachyura.jpg'></td><td><center>bubble</center><img src='https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/species/bubble.jpg'></td><td><center>Calanidae</center><img src='https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/species/Calanidae.jpg'></td></tr><tr><td><center>Calanoida</center><img src='https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/species/Calanoida.jpg'></td><td><center>calyptopsis</center><img src='https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/species/calyptopsis.jpg'></td><td><center>Candaciidae</center><img src='https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/species/Candaciidae.jpg'></td><td><center>Cavoliniidae</center><img src='https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/species/Cavoliniidae.jpg'></td><td><center>Centropagidae</center><img src='https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/species/Centropagidae.jpg'></td><td><center>Chaetognatha</center><img src='https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/species/Chaetognatha.jpg'></td><td><center>Copilia</center><img src='https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/species/Copilia.jpg'></td><td><center>Corycaeidae</center><img src='https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/species/Corycaeidae.jpg'></td></tr><tr><td><center>Coscinodiscus</center><img src='https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/species/Coscinodiscus.jpg'></td><td><center>Creseidae</center><img src='https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/species/Creseidae.jpg'></td><td><center>cyphonaute</center><img src='https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/species/cyphonaute.jpg'></td><td><center>cypris</center><img src='https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/species/cypris.jpg'></td><td><center>Decapoda</center><img src='https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/species/Decapoda.jpg'></td><td><center>Doliolida</center><img src='https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/species/Doliolida.jpg'></td><td><center>egg__Actinopterygii</center><img src='https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/species/egg__Actinopterygii.jpg'></td><td><center>egg__Cavolinia_inflexa</center><img src='https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/species/egg__Cavolinia_inflexa.jpg'></td></tr><tr><td><center>Eucalanidae</center><img src='https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/species/Eucalanidae.jpg'></td><td><center>Euchaetidae</center><img src='https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/species/Euchaetidae.jpg'></td><td><center>eudoxie__Diphyidae</center><img src='https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/species/eudoxie__Diphyidae.jpg'></td><td><center>Evadne</center><img src='https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/species/Evadne.jpg'></td><td><center>Foraminifera</center><img src='https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/species/Foraminifera.jpg'></td><td><center>Fritillariidae</center><img src='https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/species/Fritillariidae.jpg'></td><td><center>gonophore__Diphyidae</center><img src='https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/species/gonophore__Diphyidae.jpg'></td><td><center>Haloptilus</center><img src='https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/species/Haloptilus.jpg'></td></tr><tr><td><center>Harpacticoida</center><img src='https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/species/Harpacticoida.jpg'></td><td><center>Hyperiidea</center><img src='https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/species/Hyperiidea.jpg'></td><td><center>larvae__Crustacea</center><img src='https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/species/larvae__Crustacea.jpg'></td><td><center>Limacidae</center><img src='https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/species/Limacidae.jpg'></td><td><center>Limacinidae</center><img src='https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/species/Limacinidae.jpg'></td><td><center>Luciferidae</center><img src='https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/species/Luciferidae.jpg'></td><td><center>megalopa</center><img src='https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/species/megalopa.jpg'></td><td><center>multiple__Copepoda</center><img src='https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/species/multiple__Copepoda.jpg'></td></tr><tr><td><center>nauplii__Cirripedia</center><img src='https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/species/nauplii__Cirripedia.jpg'></td><td><center>nauplii__Crustacea</center><img src='https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/species/nauplii__Crustacea.jpg'></td><td><center>nectophore__Diphyidae</center><img src='https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/species/nectophore__Diphyidae.jpg'></td><td><center>nectophore__Physonectae</center><img src='https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/species/nectophore__Physonectae.jpg'></td><td><center>Neoceratium</center><img src='https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/species/Neoceratium.jpg'></td><td><center>Noctiluca</center><img src='https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/species/Noctiluca.jpg'></td><td><center>Obelia</center><img src='https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/species/Obelia.jpg'></td><td><center>Oikopleuridae</center><img src='https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/species/Oikopleuridae.jpg'></td></tr><tr><td><center>Oithonidae</center><img src='https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/species/Oithonidae.jpg'></td><td><center>Oncaeidae</center><img src='https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/species/Oncaeidae.jpg'></td><td><center>Ophiuroidea</center><img src='https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/species/Ophiuroidea.jpg'></td><td><center>Ostracoda</center><img src='https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/species/Ostracoda.jpg'></td><td><center>Penilia</center><img src='https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/species/Penilia.jpg'></td><td><center>Phaeodaria</center><img src='https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/species/Phaeodaria.jpg'></td><td><center>Podon</center><img src='https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/species/Podon.jpg'></td><td><center>Pontellidae</center><img src='https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/species/Pontellidae.jpg'></td></tr><tr><td><center>Rhincalanidae</center><img src='https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/species/Rhincalanidae.jpg'></td><td><center>Salpida</center><img src='https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/species/Salpida.jpg'></td><td><center>Sapphirinidae</center><img src='https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/species/Sapphirinidae.jpg'></td><td><center>scale</center><img src='https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/species/scale.jpg'></td><td><center>seaweed</center><img src='https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/species/seaweed.jpg'></td><td><center>tail__Appendicularia</center><img src='https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/species/tail__Appendicularia.jpg'></td><td><center>tail__Chaetognatha</center><img src='https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/species/tail__Chaetognatha.jpg'></td><td><center>Temoridae</center><img src='https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/species/Temoridae.jpg'></td></tr></table>
 
 
-# Hyper parameters:
+# Hyperparameters:
 - __optimizer:__ 
     - We used the __Adam__ optimizer because it is very robust and it is forgiving if you specify a non-optimal learning rate.
     - InceptionV3 uses RMSProp as default, but after using RMSProp initially we noticed that we were getting better results with Adam, so ended up using that instead.
@@ -471,13 +480,13 @@ Finally we picked up the training once more and ran the model for 5 more epochs 
 
 ```python
 # Initial experiments with a maximum of 88% validation accuracy:
-Image(url= "https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/new_acc_improved.png")
+Image(url= "https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/new_acc.png")
 ```
 
 
 
 
-<img src="https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/new_acc_improved.png"/>
+<img src="https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/new_acc.png"/>
 
 
 
@@ -485,7 +494,7 @@ Red = validation data, Blue = training data
 <br>
 <br>
 
-## How important was the transfer learning from imagenet?
+### How important was the transfer learning from imagenet?
 After we were able to train a good model in less than 12 hours we decided to test how much it mattered that inceptionV3 was pre-trained with weights from imagenet.
 <br>
 <br>
@@ -527,9 +536,6 @@ display(HTML("""<table>
 
 
 # Final results on test set:
-We made a short script to load the model with the weights that performed best on the validation data. Then evaluted it's performance on the test data.
-<br>
-<br>
 
 
 ```python
@@ -568,7 +574,7 @@ The top 2 classes (Calanoida and Foraminifera) has an accuracy of 100% and the w
 ----
 # Tensorboard:
 
-Here are a few magic cells to view our models history via tensorboard interface
+Here are a few magic cells to view our models history via tensorboard interface. The logs folders can be dowloaded from 'https://github.com/JakobKallestad/InceptionV3-on-plankton-images'.
 
 
 ```python
@@ -577,11 +583,11 @@ Here are a few magic cells to view our models history via tensorboard interface
 %load_ext tensorboard
 ```
 
-### Cifar10
+### Initial Experiments:
 
 
 ```python
-%tensorboard --logdir logs_cifar10
+%tensorboard --logdir logs5
 ```
 
 ### New version (the best):
