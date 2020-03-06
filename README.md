@@ -162,27 +162,23 @@ display(HTML(''.join(html_list)))
 # Hyper parameters
 - __optimizer:__ 
     - We used the __Adam__ optimizer because it is very robust and it is forgiving if you specify a non-optimal learning rate.
-    - InceptionV3 uses RMSProp as default, but after using RMSProp initially we noticed that we were getting better results with Adam, so ended up using that instead.
-<br>
-<br>
+    - InceptionV3 uses RMSProp as default, but after using RMSProp initially we noticed that we were getting better results with Adam, so ended up using that instead.  
+  
 - __learning rate:__
     - 1e-3 (on top layers only)
-    - 1e-4 (after unfreezing all layers)
-<br>
-<br>
+    - 1e-4 (after unfreezing all layers)  
+  
 - __batch size:__
     - We ended up using a batch size of 64
-    - That is large enough to ensure a good representation of the 10 classes is each batch, and still not being too computationally heavy.
-<br>
-<br>
+    - That is large enough to ensure a good representation of the 10 classes is each batch, and still not being too computationally heavy.  
+  
 
 # Data preprocessing and augmentation
 
 - __Upscaling__:
     - We used the upscale function from cv2 package to enlarge the images.
-    - (Instead of just padding the images with zeros)
-<br>
-<br>
+    - (Instead of just padding the images with zeros)  
+  
 - __ImageDataGenerator:__
     - rotation_range=10
     - width_shift_range=0.1
@@ -192,9 +188,8 @@ display(HTML(''.join(html_list)))
     - shuffle=True
     - Since the training data is organized in order of category, we shuffle the data before every epoch. The model trains on the entire dataset for every epoch.
     - inception's own pre_proccess function. InceptionV3 comes with a pre_process function that normalizes the pixels
-to values ranging from -1>x<1
-<br>
-<br>
+to values ranging from -1>x<1  
+  
 
 # Training results
 
@@ -226,9 +221,8 @@ __Results after 28 epochs:__
 
 - __Accuracy:__
     - Training data accuracy : 99.77%
-    - Validation data accuracy : 95.00%
-<br>
-<br>
+    - Validation data accuracy : 95.00%  
+  
 - __Top_5_Accuracy:__
     - Validation data accuracy : 99.995%
 
@@ -367,30 +361,26 @@ display(HTML(''.join(html_list)))
 # Hyperparameters:
 - __optimizer:__ 
     - We used the __Adam__ optimizer because it is very robust and it is forgiving if you specify a non-optimal learning rate.
-    - InceptionV3 uses RMSProp as default, but after using RMSProp initially we noticed that we were getting better results with Adam, so ended up using that instead.
-<br>
-<br>
+    - InceptionV3 uses RMSProp as default, but after using RMSProp initially we noticed that we were getting better results with Adam, so ended up using that instead.  
+  
 - __learning rate:__
     - 1e-3 (on top layers only)
     - 1e-4 (after unfreezing all layers)
-    - 1e-5 (for the final few epochs)
-<br>
-<br>
+    - 1e-5 (for the final few epochs)  
+  
 - __batch size:__
     - We used a batch size of __128__
     - We wanted a high batch size as there are many classes in the dataset and it is also unbalanced which is not taken into account by the training generator and therefore poses a risk of having very unbalanced batches if they are small.
     - When testing we found that using a batch size of 128 gave significantly better results than a batch size of 64.
-    - Due to memory constraint we were not able to test with a higher batch size than 128, but any higher than this might make training too slow anyway.
-<br>
-<br>
+    - Due to memory constraint we were not able to test with a higher batch size than 128, but any higher than this might make training too slow anyway.  
+  
 - __steps_per_epoch:__
     - train: 1000
     - validate: 51
     - test: 51
     - As there are nearly 700 000 images in the training set and a batch size of 128 this gives us (128*1000)/700000 ≈ 0.2 which means that the model sees about 1/5 of the data per epoch.
-    - For test and validation the steps_per_epoch are sufficiently high so that all the data is used to calculate validation and test accuracy/loss.
-<br>
-<br>
+    - For test and validation the steps_per_epoch are sufficiently high so that all the data is used to calculate validation and test accuracy/loss.  
+  
 
 # Data preprocessing and augmentation
 
@@ -400,34 +390,28 @@ display(HTML(''.join(html_list)))
     - height_shift_range=0.1
     - horizontal_flip=True
     - vertical_flip=True
-    - inception's own pre_proccess function
-<br>
-<br>
+    - inception's own pre_proccess function  
+  
     - We used __heavy__ augmentation on the training data. Having the ability to flip and rotate the images freely put us in a situation where we felt that the risk of overfitting was very low.
-    - This meant that our main challenge for training a good model was having enough time to train it, and tuning the hyper parameters correctly.
-<br>
-<br>
+    - This meant that our main challenge for training a good model was having enough time to train it, and tuning the hyper parameters correctly.  
+  
 - __Datagenerator:__
     - shuffle=True
     - The datagenerator shuffles the training data to hopefully create somewhat even batches.
-    - Note that it makes sure to go through all the training data before re-shuffeling.
-<br>
-<br>
+    - Note that it makes sure to go through all the training data before re-shuffeling.  
+  
     - target_size=(299, 299)
-    - As the plankton dataset contains images of different sizes we used the target_size argument to automatically resize all images to (299, 299) when read from directory.
-<br>
-<br>
+    - As the plankton dataset contains images of different sizes we used the target_size argument to automatically resize all images to (299, 299) when read from directory.  
+  
     - color_mode='rgb'
-    - Finally, because the plankton dataset is only grayscale we used the argument color_mode='rgb' to duplicate the channel two times for a total of three equal channels which corresponds to a grayscale image.
-<br>
-<br>
+    - Finally, because the plankton dataset is only grayscale we used the argument color_mode='rgb' to duplicate the channel two times for a total of three equal channels which corresponds to a grayscale image.  
+  
 - __Dealing with class imbalance__:
     - we used sklearn.utils.class_weight.compute_class_weight to compute class_weights based on the number of samples per class.
     - We used this as an argument to the models fit method as:
         - class_weight=class_weight
-    - This argument means that classes with less samples in are prioritized and therefore has a higher impact on computing the gradient than the classes with more samples. 
-<br>
-<br>
+    - This argument means that classes with less samples in are prioritized and therefore has a higher impact on computing the gradient than the classes with more samples.   
+  
 
 
 # Initial experiments
@@ -436,20 +420,20 @@ Initially we experimented with different settings and hyper parameters and we ev
 - Adam gave better results than RMSProp
 - Often we had set the learning rate too high
 - We set too few of the layers to be trainable for a long time
-- In addition to this the imagedatagenerator also used a "zoom" augmentation which we eventually decided to drop as the images are cropped quite uniformly in a way that made the zoom potentially harmfull for performance.
-<br>
+- In addition to this the imagedatagenerator also used a "zoom" augmentation which we eventually decided to drop as the images are cropped quite uniformly in a way that made the zoom potentially harmfull for performance.  
+  
 
 ### Lets take a look at the graph below which shows an overview of the initial experiments:
-- In the beginning the model only went over __less than 1%__ of the entire training set per epoch and only the top layers were trainable. This is why there are so many epochs in the graph. 
-<br>
-- The first peak was when we decided to __unfreeze more layers__ than just the top layers of inception and made them trainable which increased accuracy from about 8% to about 15%. 
-<br>
-- The second peak was when we realized that it helped to __increase the batch size and steps_per epoch__ so that the model  over about 20% of the entire training set per epoch.
-<br>
-- The last __giant peak__ happened as soon as we __unfroze all the layers__ of inception for training.
-
-At this point we decided to start from scratch in order to try and recreate the very quick increase in accuracy that the model achieved by the end, but achieve this in less epochs.
-
+- In the beginning the model only went over __less than 1%__ of the entire training set per epoch and only the top layers were trainable. This is why there are so many epochs in the graph.  
+  
+- The first peak was when we decided to __unfreeze more layers__ than just the top layers of inception and made them trainable which increased accuracy from about 8% to about 15%.  
+  
+- The second peak was when we realized that it helped to __increase the batch size and steps_per epoch__ so that the model  over about 20% of the entire training set per epoch.  
+  
+- The last __giant peak__ happened as soon as we __unfroze all the layers__ of inception for training.  
+  
+At this point we decided to start from scratch in order to try and recreate the very quick increase in accuracy that the model achieved by the end, but achieve this in less epochs.  
+  
 
 ```python
 # Initial experiments with a maximum of 89% accuracy:
@@ -479,14 +463,14 @@ Finally we picked up the training once more and ran the model for 5 more epochs 
 
 
 ```python
-# Initial experiments with a maximum of 88% validation accuracy:
-Image(url= "https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/new_acc.png")
+# Validation accuracy:
+Image(url= "https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/new_acc_improved.png")
 ```
 
 
 
 
-<img src="https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/new_acc.png"/>
+<img src="https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/new_acc_improved.png"/>
 
 
 
@@ -520,19 +504,10 @@ display(HTML("""<table>
                 </tr>
                 </table>"""))
 ```
-
-
-<table>                
-                <tr>
-                <td><center>With imagenet weights</center><img src='https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/new_acc.png'></td>
-                <td><center>Without imagenet weights</center><img src='https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/no_transfer_acc.png'></td>
-                </tr>
-
-                <tr>
-                <td><center>With imagenet weights</center><img src='https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/new_cm.gif'></td>
-                <td><center>Without imagenet weights</center><img src='https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/no_transfer_cm.gif'></td>
-                </tr>
-                </table>
+                
+                
+![With imagenet weights](https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/new_acc.png "With imagenet weights") ![Without imagenet weights](https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/no_transfer_acc.png "Without imagenet weights")
+![With imagenet weights 2](https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/new_cm.gif "With imagenet weights") ![Without imagenet weights 2](https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/no_transfer_cm.gif "Without imagenet weights")
 
 
 # Final results on test set:
