@@ -509,7 +509,7 @@ display(HTML("""<table>
 With imagenet weights             |  Without imagenet weights
 :-------------------------:|:-------------------------:
 ![](https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/new_acc.png)  |  ![](https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/no_transfer_acc.png)
-
+:-------------------------:|:-------------------------:
 ![](https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/new_cm.gif)  |  ![](https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/no_transfer_cm.gif)
 
 
