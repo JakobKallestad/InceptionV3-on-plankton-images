@@ -485,7 +485,7 @@ After we were able to train a good model in less than 12 hours we decided to tes
 We executed the same code again, only this time without loading the weights from imagenet when creating the inceptionV3 model. Then we ran our code overnight for 12 epochs so we could compare the results with and without transfer learning from imagenet.
 <br>
 <br>
-Our findings show that there was not much, if any different between loading the weights from imagenet or leaving the weights to random initialization. This result surprised us, but perhaps it makes sense as the plankton dataset does not show much resemblance to imagenet at all.
+Our findings show that there was a significant difference between loading the weights from imagenet or leaving the weights to random initialization.
 <br>
 <br>
 Under is a comparison of the two models:
@@ -510,7 +510,7 @@ With imagenet weights             |  Without imagenet weights
 :-------------------------:|:-------------------------:
 ![](https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/new_acc.png)  |  ![](https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/no_transfer_acc.png)
 :-------------------------:|:-------------------------:
-![](https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/new_cm.gif)  |  ![](https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/no_transfer_cm.gif)
+![](https://raw.githubusercontent.com/JakobKallestad/InceptionV3-on-plankton-images/master/images/plankton/new_cm.gif)  |  ![Missing]()
 
 
 # Final results on test set:
